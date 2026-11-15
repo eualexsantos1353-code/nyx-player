@@ -39,6 +39,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="tvaovivo" android:host="canal" />
+                <!-- tvaovivo://ajuste?video=leve|normal (VideoMode) -->
+                <data android:scheme="tvaovivo" android:host="ajuste" />
             </intent-filter>
         </activity>
 

@@ -11,6 +11,7 @@ import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.widget.Toast
 import android.webkit.WebView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -243,17 +244,33 @@ class NyxAndroidPlugin(private val activity: Activity) : Plugin(activity) {
             backgrounded = false
             engine?.onForeground()
             if (fullscreen) applyFullscreen(true)
-            // A channel link is waiting (app launched or brought back by it): the page takes it
-            if (pendingLaunchLink() != null) trigger("launchLink", JSObject())
+            // Settings link (tvaovivo://ajuste?…) handled here; a channel link is taken by the page
+            if (!handleSettingsLink() && pendingLaunchLink() != null) trigger("launchLink", JSObject())
         }
     }
 
     // ---- Channel links ----------------------------------------------------
 
-    /** tvaovivo://… link that opened the app or brought it back, until the page takes it */
+    /** tvaovivo://canal… link that opened the app or brought it back, until the page takes it */
     private fun pendingLaunchLink(): String? {
         val data = activity.intent?.data ?: return null
-        return if (data.scheme == LAUNCH_SCHEME) data.toString() else null
+        return if (data.scheme == LAUNCH_SCHEME && data.host == "canal") data.toString() else null
+    }
+
+    /** tvaovivo://ajuste?video=leve|normal: video mode on the TV (VideoMode), without a settings screen */
+    private fun handleSettingsLink(): Boolean {
+        val data = activity.intent?.data ?: return false
+        if (data.scheme != LAUNCH_SCHEME || data.host != "ajuste") return false
+        activity.intent?.data = null
+        val light = when (data.getQueryParameter("video")) {
+            "leve" -> true
+            "normal" -> false
+            else -> return true
+        }
+        VideoMode.setLight(activity, light)
+        val message = if (light) "Vídeo leve ligado" else "Vídeo normal ligado"
+        Toast.makeText(activity, "$message (vale a partir do próximo canal)", Toast.LENGTH_LONG).show()
+        return true
     }
 
     /** Hands the waiting link to the page once (`url` null when there is none) */

@@ -200,6 +200,12 @@ class MpvEngine(
         lib.setPropertyBoolean("pause", request.paused)
         // Reconexão automática do canal ao vivo por HTTP (PlaybackPolicy.lavfOptions)
         lib.setOptionString("stream-lavf-o", PlaybackPolicy.lavfOptions(request.url))
+        // Vídeo leve na TV: o chip decodifica e desenha direto na tela (VideoMode)
+        val light = !dolbyVisionMode && VideoMode.isLight(activity, television)
+        lib.setOptionString("hwdec", if (light) LIGHT_HWDEC else DEFAULT_HWDEC)
+        val vo = if (light) LIGHT_VO else DEFAULT_VO
+        if (videoOutput != vo) setVideoOutput(vo)
+        StreamDiagnostics.log(id, "video output $vo")
         lastLoad = request
         fileLoaded = false
         lib.command(arrayOf("loadfile", request.url, "replace"))
@@ -802,8 +808,13 @@ class MpvEngine(
                         .format(window.progress * 100, window.dropRatio * 100, window.audioTrouble),
                 )
                 if (SmoothnessPolicy.tooSlow(bad)) {
-                    reportTooSlow(known = false)
-                    return@postDelayed
+                    // Decodificação por hardware: a TV dá conta do formato; o engasgo vem da rede
+                    // ou do provedor, e o aviso "pesada demais" só interrompia o canal
+                    if (SmoothnessPolicy.isSoftwareDecoding(lib.getPropertyString("hwdec-current"))) {
+                        reportTooSlow(known = false)
+                        return@postDelayed
+                    }
+                    bad = 0
                 }
             }
             scheduleSmoothnessCheck(token, generation, sample, bad, SMOOTH_CHECK_INTERVAL_MS)
@@ -885,6 +896,9 @@ class MpvEngine(
 
         private const val DEFAULT_VO = "gpu"
         private const val DEFAULT_HWDEC = "mediacodec,mediacodec-copy"
+        /** Vídeo leve na TV (VideoMode): decodificado e desenhado pelo chip, direto na tela */
+        private const val LIGHT_VO = "mediacodec_embed"
+        private const val LIGHT_HWDEC = "mediacodec"
         /** gpu-next applies Dolby Vision reshaping; gpu as a fallback (wrong colours but a picture) */
         private const val DOLBY_VISION_VO = "gpu-next,gpu"
         /** Decoder re-creation + cache refill after switching to software decoding */
