@@ -35,6 +35,7 @@ if (import.meta.env.DEV) {
 import { useSession } from './contexts/SessionContext';
 import { useNavigation } from './contexts/NavigationContext';
 import { usePlayer } from './contexts/PlayerContext';
+import { useLaunchLink } from './hooks/useLaunchLink';
 import { useSupabaseAuth } from './contexts/SupabaseAuthContext';
 import { useLiveTvCategories } from './hooks/useLiveTvCategories';
 import { liveCategoryOf, liveTvLists, visibleLiveCategories } from './services/liveTvLists';
@@ -287,6 +288,9 @@ const App: React.FC = () => {
   } = useEpisodeNavigation(selectedMovie?.tmdbId, t);
 
   const { currentlyPlaying, mpvConnected, isTransitioningToPlayer, stop } = usePlayer();
+
+  // Link tvaovivo://canal?nome=… (Free My TV, adb): opens the channel on the Live TV tab
+  useLaunchLink(lightIndexes, () => setActiveTab('live'));
 
   // =========================================================================
   // LIVE TV DATA — Données pour le Channel Switcher (calculé à partir de LightIndexes)

@@ -26,6 +26,7 @@ const COMMANDS: &[&str] = &[
     "request_install_permission",
     "download_update",
     "install_update",
+    "take_launch_link",
     "register_listener",
     "remove_listener",
 ];

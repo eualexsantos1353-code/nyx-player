@@ -1,5 +1,6 @@
 package com.nyxplayer.app
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import app.tauri.plugin.PluginManager
@@ -15,6 +16,13 @@ class MainActivity : TauriActivity() {
   // l'app passe en arrière-plan et ne reprend pas au retour (NyxAndroidPlugin.onStop / onResume).
   // Tauri 2.12 les relaie de nouveau lui-même : retirer ce bloc en passant en 2.12, sinon chaque
   // plugin les recevrait deux fois (scripts/test/android-cycle-de-vie-tauri.test.mjs le vérifie).
+  // Link tvaovivo://canal?… with the app already open (singleTask): kept as the activity's intent,
+  // read by NyxAndroidPlugin on onResume, which tells the page (takeLaunchLink)
+  override fun onNewIntent(intent: Intent) {
+    super.onNewIntent(intent)
+    setIntent(intent)
+  }
+
   override fun onResume() {
     super.onResume()
     PluginManager.onResume()

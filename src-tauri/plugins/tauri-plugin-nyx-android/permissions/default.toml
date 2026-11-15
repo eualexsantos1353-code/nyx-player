@@ -26,6 +26,7 @@ permissions = [
     "allow-request-install-permission",
     "allow-download-update",
     "allow-install-update",
+    "allow-take-launch-link",
     "allow-register-listener",
     "allow-remove-listener",
 ]

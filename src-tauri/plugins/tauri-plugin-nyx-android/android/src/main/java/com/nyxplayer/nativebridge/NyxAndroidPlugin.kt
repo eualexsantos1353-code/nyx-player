@@ -116,6 +116,9 @@ class UpdateDownloadArgs {
     lateinit var version: String
 }
 
+/** Links that open a channel: tvaovivo://canal?nome=… (src/services/launchLink.ts) */
+private const val LAUNCH_SCHEME = "tvaovivo"
+
 @TauriPlugin
 class NyxAndroidPlugin(private val activity: Activity) : Plugin(activity) {
     private val secureStore by lazy { SecureStore(activity.applicationContext) }
@@ -240,6 +243,26 @@ class NyxAndroidPlugin(private val activity: Activity) : Plugin(activity) {
             backgrounded = false
             engine?.onForeground()
             if (fullscreen) applyFullscreen(true)
+            // A channel link is waiting (app launched or brought back by it): the page takes it
+            if (pendingLaunchLink() != null) trigger("launchLink", JSObject())
+        }
+    }
+
+    // ---- Channel links ----------------------------------------------------
+
+    /** tvaovivo://… link that opened the app or brought it back, until the page takes it */
+    private fun pendingLaunchLink(): String? {
+        val data = activity.intent?.data ?: return null
+        return if (data.scheme == LAUNCH_SCHEME) data.toString() else null
+    }
+
+    /** Hands the waiting link to the page once (`url` null when there is none) */
+    @Command
+    fun takeLaunchLink(invoke: Invoke) {
+        activity.runOnUiThread {
+            val link = pendingLaunchLink()
+            if (link != null) activity.intent?.data = null
+            invoke.resolve(JSObject().apply { put("url", link ?: JSONObject.NULL) })
         }
     }
 
