@@ -16,16 +16,16 @@ internal object PlaybackPolicy {
     const val BASE_LAVF_OPTIONS = "multiple_requests=0"
 
     /**
-     * Ao vivo por HTTP direto (`.ts`): muitos provedores fecham a conexão de tempos em tempos. Sem
-     * reconexão, o mpv chegava ao "fim do arquivo", a imagem travava e o canal era recarregado
-     * (useLiveEndWatchdog). Com `reconnect_at_eof`, o FFmpeg reabre a conexão sozinho e a imagem
-     * segue. Não vale para HLS (os segmentos acabam de propósito) nem para filmes e episódios.
+     * Ao vivo por HTTP direto (`.ts`): o FFmpeg reconecta sozinho quando a conexão cai por erro.
+     * Sem `reconnect_at_eof`: ao reabrir no fim, o servidor reenviava alguns segundos já vistos e a
+     * cena "voltava". Contas Xtream com HLS usam `.m3u8` (xtreamApi.liveExtensionFor), que não tem
+     * esse problema. Não vale para HLS (os segmentos acabam de propósito) nem para filmes e episódios.
      */
     fun lavfOptions(url: String): String =
         if (isVodUrl(url) || HLS_URL.containsMatchIn(url)) {
             BASE_LAVF_OPTIONS
         } else {
-            "$BASE_LAVF_OPTIONS,reconnect=1,reconnect_streamed=1,reconnect_at_eof=1,reconnect_on_network_error=1,reconnect_delay_max=2"
+            "$BASE_LAVF_OPTIONS,reconnect=1,reconnect_streamed=1,reconnect_on_network_error=1,reconnect_delay_max=2"
         }
 
     /**

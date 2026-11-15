@@ -114,14 +114,15 @@ function listFromResponse(data: unknown): unknown[] {
 }
 
 /**
- * Format du direct à demander d'après `user_info.allowed_output_formats` : `m3u8` quand le
- * fournisseur n'autorise que le HLS (il refuse alors `…/123.ts`, la chaîne ne se lançait pas),
- * sinon rien (format habituel `ts`). Liste absente, vide ou illisible : rien, comme avant.
+ * Format du direct à demander d'après `user_info.allowed_output_formats`.
+ * Versão própria: HLS (`m3u8`) sempre que o provedor oferece. Em `.ts` o servidor fecha a
+ * conexão de tempos em tempos (imagem travava ou voltava a cena ao reconectar); em HLS o canal
+ * chega em pedaços e o player emenda sem parar. Lista absente, vide ou illisible : `ts`, comme avant.
  */
 export function liveExtensionFor(allowed: unknown): 'm3u8' | undefined {
   if (!Array.isArray(allowed)) return undefined;
   const formats = allowed.filter((f): f is string => typeof f === 'string').map((f) => f.trim().toLowerCase());
-  return !formats.includes('ts') && formats.includes('m3u8') ? 'm3u8' : undefined;
+  return formats.includes('m3u8') ? 'm3u8' : undefined;
 }
 
 /** Format du direct retenu pour chaque compte (serveur + identifiant), noté à l'authentification. */
