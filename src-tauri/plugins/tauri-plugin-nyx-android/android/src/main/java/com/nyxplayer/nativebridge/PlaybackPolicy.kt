@@ -9,6 +9,25 @@ internal object PlaybackPolicy {
 
     fun isVodUrl(url: String): Boolean = VOD_URL.containsMatchIn(url)
 
+    /** Lista HLS (`.m3u8`, ou `.m3u` de alguns provedores): os segmentos terminam de propósito */
+    private val HLS_URL = Regex("\\.m3u8?($|[?#])", RegexOption.IGNORE_CASE)
+
+    /** Opções do FFmpeg para abrir um canal (mpv `stream-lavf-o`) */
+    const val BASE_LAVF_OPTIONS = "multiple_requests=0"
+
+    /**
+     * Ao vivo por HTTP direto (`.ts`): muitos provedores fecham a conexão de tempos em tempos. Sem
+     * reconexão, o mpv chegava ao "fim do arquivo", a imagem travava e o canal era recarregado
+     * (useLiveEndWatchdog). Com `reconnect_at_eof`, o FFmpeg reabre a conexão sozinho e a imagem
+     * segue. Não vale para HLS (os segmentos acabam de propósito) nem para filmes e episódios.
+     */
+    fun lavfOptions(url: String): String =
+        if (isVodUrl(url) || HLS_URL.containsMatchIn(url)) {
+            BASE_LAVF_OPTIONS
+        } else {
+            "$BASE_LAVF_OPTIONS,reconnect=1,reconnect_streamed=1,reconnect_at_eof=1,reconnect_on_network_error=1,reconnect_delay_max=2"
+        }
+
     /**
      * Direct : durée inconnue ou nulle, sauf pour un film ou un épisode. Certains films n'annoncent
      * pas de durée (fichier sans index, durée pas encore lue) : les traiter comme un direct les

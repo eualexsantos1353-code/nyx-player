@@ -198,6 +198,8 @@ class MpvEngine(
         // `start` as an option (not loadfile's per-file options): same syntax on every mpv version
         lib.setOptionString("start", if (request.startSeconds > 0) request.startSeconds.toString() else "none")
         lib.setPropertyBoolean("pause", request.paused)
+        // Reconexão automática do canal ao vivo por HTTP (PlaybackPolicy.lavfOptions)
+        lib.setOptionString("stream-lavf-o", PlaybackPolicy.lavfOptions(request.url))
         lastLoad = request
         fileLoaded = false
         lib.command(arrayOf("loadfile", request.url, "replace"))
@@ -492,8 +494,12 @@ class MpvEngine(
         // Same network behaviour as the desktop player (mpvBridge.ts)
         lib.setOptionString("user-agent", userAgent)
         lib.setOptionString("network-timeout", "30")
-        lib.setOptionString("stream-lavf-o", "multiple_requests=0")
+        lib.setOptionString("stream-lavf-o", PlaybackPolicy.BASE_LAVF_OPTIONS)
         lib.setOptionString("cache", "yes")
+        // Ao vivo: começa com alguns segundos guardados e, depois de uma falta de dados, espera
+        // juntar 3 s antes de seguir (com 1 s, padrão do mpv, o canal parava e voltava sem parar)
+        lib.setOptionString("cache-pause-initial", "yes")
+        lib.setOptionString("cache-pause-wait", "3")
         val cache = cacheSizes()
         lib.setOptionString("demuxer-max-bytes", cache.forwardBytes.toString())
         lib.setOptionString("demuxer-max-back-bytes", cache.backBytes.toString())

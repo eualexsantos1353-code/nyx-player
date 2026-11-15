@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import logoSecondaireBlanc from '../assets/brand/logo-secondaire-blanc.svg';
 import { useTvPageFocus } from '../hooks/useTvPageFocus';
 import './WelcomePage.css';
+import { FORCED_LANGUAGE } from '../config/language';
 
 interface WelcomePageProps {
     onSignIn: () => void;
@@ -35,6 +36,7 @@ const WelcomePage: React.FC<WelcomePageProps> = ({ onSignIn, onSignInWithPhone, 
 
     return (
         <div className="welcome" ref={rootRef} data-testid="welcome-page">
+            {!FORCED_LANGUAGE && (
             <button
                 data-testid="welcome-language"
                 data-nav-row="welcome-language"
@@ -46,6 +48,7 @@ const WelcomePage: React.FC<WelcomePageProps> = ({ onSignIn, onSignInWithPhone, 
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M2 12h20" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
                 {' '}{i18n.resolvedLanguage === 'fr' ? 'FR' : 'EN'}
             </button>
+            )}
 
             <div className="welcome__content">
                 <img src={logoSecondaireBlanc} alt="Nyx Player" className="welcome__logo" />

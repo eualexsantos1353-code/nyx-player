@@ -22,6 +22,7 @@ import { DEFAULT_CAROUSELS } from './carouselConstants';
 import { createLogger } from '../utils/logger';
 import { providerTablesOn } from './sync/cloudScope';
 import { LIVE_ONLY } from '../config/liveOnly';
+import { FORCED_LANGUAGE } from '../config/language';
 
 const log = createLogger('Preferences');
 
@@ -292,6 +293,8 @@ export async function setDnsProvider(provider: DnsProvider): Promise<void> {
 }
 
 export function getLanguage(): string {
+  // Versão própria: idioma fixo, o idioma salvo na conta não o troca ao abrir o perfil
+  if (FORCED_LANGUAGE) return FORCED_LANGUAGE;
   return getPreference('language') ?? 'en';
 }
 

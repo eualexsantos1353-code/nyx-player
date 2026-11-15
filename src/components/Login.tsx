@@ -17,6 +17,7 @@ import type { TvLinkPayload } from '../services/tvLink/tvLinkPayload';
 import { isTv } from '../utils/platform';
 import LocalDatabaseDamagedNotice from './Common/LocalDatabaseDamagedNotice';
 import LocalM3uFileButton from './Common/LocalM3uFileButton';
+import { FORCED_LANGUAGE } from '../config/language';
 
 interface LoginProps {
   onLogin: (creds: XtreamCredentials) => void;
@@ -143,6 +144,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, isLoading, progress, onBackToPro
   return (
     <div className="login-container" data-testid="provider-login" ref={containerRef}>
       {/* Globe toggle — langue pré-login (localStorage only) */}
+      {!FORCED_LANGUAGE && (
       <button
         data-testid="provider-language"
         type="button"
@@ -153,6 +155,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, isLoading, progress, onBackToPro
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M2 12h20" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
         {' '}{i18n.resolvedLanguage === 'fr' ? 'FR' : 'EN'}
       </button>
+      )}
 
       <div className="login-box">
         {effectiveError && <div className="login-error" data-testid="provider-error">{effectiveError}</div>}

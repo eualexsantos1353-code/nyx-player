@@ -4,6 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import type { BackendModule, ResourceLanguage } from 'i18next';
 import { createLogger } from '../utils/logger';
+import { FORCED_LANGUAGE } from '../config/language';
 
 const log = createLogger('i18n');
 
@@ -15,6 +16,7 @@ const log = createLogger('i18n');
 const LOADERS: Record<string, () => Promise<{ default: ResourceLanguage }>> = {
   fr: () => import('./locales/fr'),
   en: () => import('./locales/en'),
+  pt: () => import('./locales/pt'),
 };
 
 /** Tous les espaces de textes, chargés ensemble avec leur langue (aucun écran n'attend le sien) */
@@ -75,7 +77,9 @@ export const i18nReady = i18n
     debug: import.meta.env.DEV, // Logs info in dev mode
     // L'anglais sert aux langues sans textes (« de »…). Le français n'a pas de repli : il a toutes les
     // clés de l'anglais (test locales.test.ts), et un repli chargerait aussi l'anglais à chaque lancement.
-    fallbackLng: { fr: [], default: ['en'] },
+    fallbackLng: { fr: [], pt: ['en'], default: ['en'] },
+    // Versão própria: idioma fixo (config/language.ts), acima do idioma salvo ou do sistema
+    ...(FORCED_LANGUAGE ? { lng: FORCED_LANGUAGE } : {}),
     ns: [...NAMESPACES],
     defaultNS,
     interpolation: {

@@ -11,6 +11,7 @@ import NyxDropdown from '../Common/NyxDropdown';
 import ConfirmModal from '../Common/ConfirmModal';
 import { isMobile } from '../../utils/platform';
 import { LIVE_ONLY } from '../../config/liveOnly';
+import { FORCED_LANGUAGE } from '../../config/language';
 
 // ============================================================================
 // TYPES
@@ -125,6 +126,8 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                     {t('interface_title')}
                 </h3>
                 <div className="settings-options">
+                    {/* Versão própria: idioma fixo em português */}
+                    {!FORCED_LANGUAGE && (
                     <div className="settings-option">
                         <div className="option-info">
                             <span className="option-label">{t('language')}</span>
@@ -137,6 +140,7 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                             testId="settings-language"
                         />
                     </div>
+                    )}
                     {/* Modo Só TV : a página inicial é sempre a TV ao vivo */}
                     {!LIVE_ONLY && (
                     <div className="settings-option">
