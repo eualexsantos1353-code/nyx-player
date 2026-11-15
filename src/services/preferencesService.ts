@@ -21,6 +21,7 @@ import { PREFERENCES_EVENT, CAROUSEL_PREFERENCES_EVENT } from './eventConstants'
 import { DEFAULT_CAROUSELS } from './carouselConstants';
 import { createLogger } from '../utils/logger';
 import { providerTablesOn } from './sync/cloudScope';
+import { LIVE_ONLY } from '../config/liveOnly';
 
 const log = createLogger('Preferences');
 
@@ -237,6 +238,8 @@ async function setPreference(key: string, value: string): Promise<void> {
 
 // Helpers individuels
 export function getHomePage(): HomePageOption {
+  // Modo Só TV : a página inicial é sempre a TV ao vivo
+  if (LIVE_ONLY) return 'live';
   return (getPreference('home_page') as HomePageOption) ?? DEFAULT_USER_PREFS.homePage;
 }
 

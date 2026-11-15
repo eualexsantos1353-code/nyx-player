@@ -15,6 +15,7 @@ mod fusion_index;
 mod fusion_rules;
 mod http;
 mod ingestion;
+mod live_only;
 mod logging;
 mod m3u_ingest;
 mod m3u_local_file;

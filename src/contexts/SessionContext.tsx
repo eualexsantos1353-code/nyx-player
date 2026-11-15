@@ -35,6 +35,7 @@ import { devLog } from '../utils/devLog';
 import { useSupabaseAuth } from './SupabaseAuthContext';
 import { useSessionLifecycle } from '../hooks/useSessionLifecycle';
 import { computeIptvStatus } from '../utils/iptvStatus';
+import { LIVE_ONLY } from '../config/liveOnly';
 
 // ============================================================================
 // CONTEXT
@@ -69,7 +70,7 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
     const [lightIndexes, setLightIndexes] = useState<LightIndexes | null>(null);
     const [lastIngestionPartial, setLastIngestionPartial] = useState(false);
     const [linksTick, setLinksTick] = useState(0);
-    const [homeTab, setHomeTab] = useState<TabType>('dashboard');
+    const [homeTab, setHomeTab] = useState<TabType>(LIVE_ONLY ? 'live' : 'dashboard');
     // Phase 1.5 — Profile Selector
     const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
     const [sourceChanged, setSourceChanged] = useState(false);

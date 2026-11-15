@@ -84,6 +84,9 @@ jobs:
       VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://example.invalid' }}
       VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'ci-placeholder' }}
       ABI_CHOICE: ${{ matrix.abi }}
+      # Versão própria (Modo Só TV) : outro ID e outro nome, instala ao lado do Nyx original
+      NYX_ANDROID_APP_ID: com.eualexsantos.tvaovivo
+      NYX_ANDROID_APP_LABEL: TV ao Vivo
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:

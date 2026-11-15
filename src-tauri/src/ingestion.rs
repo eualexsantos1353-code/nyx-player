@@ -587,8 +587,21 @@ pub async fn ingest_catalog(
         (series_cats_result, series_cats_logs),
         (live_cats_result, live_cats_logs),
     ) = tokio::join!(
-        fetch_list::<XtreamMovie>(&client, &movies_url, "movies", &stopper, &emit, list),
-        fetch_list::<XtreamSeries>(&client, &series_url, "series", &stopper, &emit, list),
+        // Modo Só TV : filmes e séries não são pedidos (lista vazia, tabela vazia = « ausente », sem alerta)
+        async {
+            if crate::live_only::skips_list("movies") {
+                (Ok(Vec::new()), vec!["Só TV : filmes não baixados".to_string()])
+            } else {
+                fetch_list::<XtreamMovie>(&client, &movies_url, "movies", &stopper, &emit, list).await
+            }
+        },
+        async {
+            if crate::live_only::skips_list("series") {
+                (Ok(Vec::new()), vec!["Só TV : séries não baixadas".to_string()])
+            } else {
+                fetch_list::<XtreamSeries>(&client, &series_url, "series", &stopper, &emit, list).await
+            }
+        },
         fetch_list::<XtreamLive>(&client, &live_url, "live", &stopper, &emit, list),
         fetch_list::<XtreamCategory>(&client, &vod_cats_url, "vod_categories", &stopper, &emit, categories),
         fetch_list::<XtreamCategory>(&client, &series_cats_url, "series_categories", &stopper, &emit, categories),

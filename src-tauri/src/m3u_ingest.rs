@@ -223,6 +223,8 @@ pub fn write_m3u_catalog_until<R: BufRead>(
                         sort,
                     ])
                 }
+                // Modo Só TV : filmes e episódios da lista não são gravados
+                _ if crate::live_only::LIVE_ONLY => Ok(0),
                 (EntryKind::Episode, Some(info)) => {
                     let category = category_of("series", &entry.group);
                     counts.episodes += 1;

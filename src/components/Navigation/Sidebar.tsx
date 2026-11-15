@@ -4,6 +4,7 @@ import type { TabType } from '../../contexts/NavigationContext';
 import { DASHBOARD_RESET_EVENT } from '../../services/eventConstants';
 import { useTvArrivalFocus } from '../../hooks/useTvArrivalFocus';
 import nyxLogo from '../../assets/icons/nyx-logo.svg';
+import { LIVE_ONLY } from '../../config/liveOnly';
 
 interface SidebarProps {
   activeTab: TabType;
@@ -98,10 +99,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, onLogout, isH
       </div>
 
       <nav className="sidebar-nav">
-        {renderButton('search', t('search'))}
-        {renderButton('dashboard', t('home'))}
+        {/* Modo Só TV : sem Busca, Início e Minha lista (filmes e séries ficam no Nuvio) */}
+        {!LIVE_ONLY && renderButton('search', t('search'))}
+        {!LIVE_ONLY && renderButton('dashboard', t('home'))}
         {renderButton('live', t('live'))}
-        {renderButton('watchlist', t('watchlist'))}
+        {!LIVE_ONLY && renderButton('watchlist', t('watchlist'))}
         {renderButton('settings', t('settings'))}
       </nav>
 

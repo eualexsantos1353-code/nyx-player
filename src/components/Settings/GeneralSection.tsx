@@ -10,6 +10,7 @@ import { TMDB_LANGUAGE_EVENT } from '../../services/eventConstants';
 import NyxDropdown from '../Common/NyxDropdown';
 import ConfirmModal from '../Common/ConfirmModal';
 import { isMobile } from '../../utils/platform';
+import { LIVE_ONLY } from '../../config/liveOnly';
 
 // ============================================================================
 // TYPES
@@ -136,6 +137,8 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                             testId="settings-language"
                         />
                     </div>
+                    {/* Modo Só TV : a página inicial é sempre a TV ao vivo */}
+                    {!LIVE_ONLY && (
                     <div className="settings-option">
                         <div className="option-info">
                             <span className="option-label">{t('homepage')}</span>
@@ -148,6 +151,7 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                             testId="settings-homepage"
                         />
                     </div>
+                    )}
                 </div>
             </section>
 

@@ -1417,7 +1417,9 @@ pub async fn refresh_catalog(
     let _running = RunningGuard;
 
     let mode = if mode.as_deref() == Some("manual") { Mode::Manual } else { Mode::Auto };
-    let selected = parse_lists(&lists);
+    // Modo Só TV : filmes e séries nunca são atualizados
+    let selected: Vec<&'static str> =
+        parse_lists(&lists).into_iter().filter(|l| !crate::live_only::skips_list(l)).collect();
     let db_path = catalog_db_path(&get_data_dir(&app), &db_name)?;
     let tmp_dir: PathBuf = app
         .path()
